@@ -18,6 +18,7 @@ from configs import device
 from evaluate import evaluate
 from evaluate import idx2tokens
 from models.qanet import QANet
+from models.ensemble import OutputEnsemble
 
 
 class SquadDataset(Dataset):
@@ -230,7 +231,7 @@ def train_ensemble():
     dev_loader = DataLoader(dataset=dev_dataset, batch_size=_config['batch_size'], shuffle=True, collate_fn=collate_fn)
 
     print('Start Building Model')
-    model = BIDAF(word_mat, char_mat).to(device)
+    model = OutputEnsemble(word_mat, char_mat).to(device)
 
     params = list(filter(lambda param: param.requires_grad, model.parameters()))
     optimizer = optim.Adam(params=params, lr=_config['learning_rate'], weight_decay=3e-7)
@@ -313,4 +314,4 @@ if __name__ == '__main__':
     elif config['model'] == 'BIDAF':
         train_bidaf()
     elif config['model'] == 'ensemble':
-        pass
+        train_ensemble()
