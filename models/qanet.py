@@ -347,9 +347,10 @@ class QANet(nn.Module):
         """
         start_anwsers = list()
         end_answers = list()
+        batch_size = start.size(0)
         start = start.cpu().numpy()
         end = end.cpu().numpy()
-        for batch in range(config['batch_size']):
+        for batch in range(batch_size):
             max_p = start[batch][0] * end[batch][0]
             start_max_idx = 0
             end_max_idx = 0

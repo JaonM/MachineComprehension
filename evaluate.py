@@ -22,10 +22,12 @@ def idx2tokens(eval_file, ids, start_idxs, end_idxs):
         context = eval_file[str(_id.item())]['context']
         spans = eval_file[str(_id.item())]['spans']
         quid = eval_file[str(_id.item())]['uuid']
-        if start_idx > len(spans) or end_idx > len(spans):
+        if start_idx >= len(spans) or end_idx >= len(spans):
             answer = ""
         else:
             start = spans[start_idx][0]
+            print(end_idx)
+            print(spans[end_idx])
             end = spans[end_idx][1]
             answer = context[start:end]
         predictions[quid] = answer
