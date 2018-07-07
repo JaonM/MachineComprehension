@@ -5,13 +5,13 @@ BIDAF (Minjoon Seo et al.,2016)  https://arxiv.org/abs/1611.01603 <br>
 QANet (Adams Wei Yu et al.,2018) https://arxiv.org/abs/1804.09541 <br>
 Ensemble model for BIDAF and QANet
 ### Structure
-preproc.py: dataset preprocessing and build training features <br>
-config.py: determine which model to train and hype-parameters setting <br>
-evaluate.py: evaluate script <br>
-main.py: program entry <br>
-models/qanet.py: QANet model <br>
-models/bidaf.py: BIDAF model <br>
-models/ensemble.py QANet and BIDAF ensemble <br>
+* preproc.py: dataset preprocessing and build training features <br>
+* config.py: determine which model to train and hype-parameters setting <br>
+* evaluate.py: evaluate script <br>
+* main.py: program entry <br>
+* models/qanet.py: QANet model <br>
+* models/bidaf.py: BIDAF model <br>
+* models/ensemble.py QANet and BIDAF ensemble <br>
 
 ### Result
 Result on dev dataset <br>
