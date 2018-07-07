@@ -13,3 +13,5 @@ mkdir -p "$EMBEDDING_DIR"
 
 wget http://nlp.stanford.edu/data/glove.840B.300d.zip -O "$EMBEDDING_DIR"/glove.840B.300d.zip
 unzip "$EMBEDDING_DIR"/glove.840B.300d.zip -d "$EMBEDDING_DIR"
+
+mkdir -p ./data/output
