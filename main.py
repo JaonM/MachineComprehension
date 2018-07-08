@@ -126,7 +126,8 @@ def train_qanet():
             print('predicting {} step dev data...'.format(step))
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
-        dev_file = json.load(configs.dev_file)
+        dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
+        dev_file = json.load(dev_file)
         metrics = evaluate(dev_file['data'], answer_dict)
         f1, em = metrics['f1'], metrics['exact_match']
 
@@ -190,7 +191,8 @@ def train_bidaf():
             print('predicting {} step dev data...'.format(step))
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
-        dev_file = json.load(configs.dev_file)
+        dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
+        dev_file = json.load(dev_file)
         metrics = evaluate(dev_file['data'], answer_dict)
         f1, em = metrics['f1'], metrics['exact_match']
 
@@ -254,7 +256,8 @@ def train_ensemble():
             print('predicting {} step dev data...'.format(step))
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
-        dev_file = json.load(configs.dev_file)
+        dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
+        dev_file = json.load(dev_file)
         metrics = evaluate(dev_file['data'], answer_dict)
         f1, em = metrics['f1'], metrics['exact_match']
 

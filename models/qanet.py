@@ -269,7 +269,7 @@ class Output(nn.Module):
         self.fc = nn.Linear(config['paragraph_limit'] * config['connector_dim'] * 2, config['paragraph_limit'])
 
     def forward(self, x):
-        x = x.view(config['batch_size'], -1)
+        x = x.view(x.size(0), -1)
         x = self.fc(x)
         x = F.relu(x)
         # x = F.dropout(x, config['dropout_rate'], training=self.training)
