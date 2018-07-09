@@ -115,9 +115,9 @@ def train_qanet():
     epoch_index = 0
     for epoch in range(_config['num_epoch']):
         dev_losses = []
-        # for step, data in enumerate(train_loader):
-        #     loss = train(model, optimizer, data)
-        #     print('{} step,training loss is {} ...'.format(step, loss))
+        for step, data in enumerate(train_loader):
+            loss = train(model, optimizer, data)
+            print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file
         for step, data in enumerate(dev_loader):
@@ -178,7 +178,7 @@ def train_bidaf():
     patience = 0  # early stop patience
 
     epoch_index = 0
-    for epoch in range(config['num_epoch']):
+    for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
             loss = train(model, optimizer, data)
@@ -243,7 +243,7 @@ def train_ensemble():
     patience = 0  # early stop patience
 
     epoch_index = 0
-    for epoch in range(config['num_epoch']):
+    for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
             loss = train(model, optimizer, data)
@@ -311,7 +311,6 @@ def collate_fn(batch):
 
 
 if __name__ == '__main__':
-    train_qanet()
     if config['model'] == 'QANet':
         train_qanet()
     elif config['model'] == 'BIDAF':

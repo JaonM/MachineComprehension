@@ -32,7 +32,7 @@ answer_file = os.path.join(home, 'data', 'answer.json')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 config = {
-    'model': 'QANet',
+    'model': 'BIDAF',
 
     'QANet': {
         'word_pretrained': True,

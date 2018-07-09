@@ -166,7 +166,7 @@ class Output(nn.Module):
         start = torch.cat([G, M], dim=2)
         start = torch.matmul(start, self.w1)
         start = F.dropout(start, config['dropout_rate'], training=self.training)
-        start = F.softmax(start, dim=1)
+        start = F.log_softmax(start, dim=1)
 
         M = M.transpose(0, 1)
         M2, hidden = self.lstm(M)
@@ -174,7 +174,7 @@ class Output(nn.Module):
         end = torch.cat([G, M2], dim=2)
         end = torch.matmul(end, self.w2)
         end = F.dropout(end, config['dropout_rate'], training=self.training)
-        end = F.softmax(end, dim=1)
+        end = F.log_softmax(end, dim=1)
         return start.squeeze(), end.squeeze()
 
 
