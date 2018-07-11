@@ -318,7 +318,7 @@ class QANet(nn.Module):
         context_enc = self.context_emb_encoder(context_emb)
         question_enc = self.question_emb_encoder(question_emb)
         context_question_att = self.context_query_attention(context_enc, question_enc)
-        print(context_question_att.size())
+        # print(context_question_att.size())
         m0 = self.resizer(context_question_att)
         for i in range(len(self.M0)):
             m0 = self.M0[i](m0)

@@ -1,0 +1,549 @@
+QANet(
+  (char_emb): Embedding(1427, 200)
+  (word_emb): Embedding(91589, 300)
+  (context_emb): Embedding(
+    (highway): Highway(
+      (linear): ModuleList(
+        (0): Linear(in_features=500, out_features=500, bias=True)
+        (1): Linear(in_features=500, out_features=500, bias=True)
+      )
+      (gate): ModuleList(
+        (0): Linear(in_features=500, out_features=500, bias=True)
+        (1): Linear(in_features=500, out_features=500, bias=True)
+      )
+    )
+  )
+  (question_emb): Embedding(
+    (highway): Highway(
+      (linear): ModuleList(
+        (0): Linear(in_features=500, out_features=500, bias=True)
+        (1): Linear(in_features=500, out_features=500, bias=True)
+      )
+      (gate): ModuleList(
+        (0): Linear(in_features=500, out_features=500, bias=True)
+        (1): Linear(in_features=500, out_features=500, bias=True)
+      )
+    )
+  )
+  (context_emb_encoder): BlockEncoder(
+    (pos): PositionEncoder()
+    (first_conv): DepthwiseSeparableConv(
+      (depthwise_conv): Conv1d(500, 500, kernel_size=(7,), stride=(1,), padding=(3,), groups=500)
+      (pointwise_conv): Conv1d(500, 128, kernel_size=(1,), stride=(1,))
+    )
+    (convs): ModuleList(
+      (0): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (1): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (2): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (3): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+    )
+    (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+    (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+    (attention): SelfAttention(
+      (w_qs): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+      (w_ks): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+      (w_vs): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+    )
+    (fc): Linear(in_features=128, out_features=128, bias=True)
+  )
+  (question_emb_encoder): BlockEncoder(
+    (pos): PositionEncoder()
+    (first_conv): DepthwiseSeparableConv(
+      (depthwise_conv): Conv1d(500, 500, kernel_size=(7,), stride=(1,), padding=(3,), groups=500)
+      (pointwise_conv): Conv1d(500, 128, kernel_size=(1,), stride=(1,))
+    )
+    (convs): ModuleList(
+      (0): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (1): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (2): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (3): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+    )
+    (conv_norm): LayerNorm(torch.Size([128, 40]), eps=1e-05, elementwise_affine=True)
+    (layer_norm): LayerNorm(torch.Size([40, 128]), eps=1e-05, elementwise_affine=True)
+    (attention): SelfAttention(
+      (w_qs): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+      (w_ks): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+      (w_vs): ParameterList(
+          (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+          (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+      )
+    )
+    (fc): Linear(in_features=128, out_features=128, bias=True)
+  )
+  (context_query_attention): ContextQueryAttention()
+  (resizer): Linear(in_features=512, out_features=128, bias=True)
+  (M0): ModuleList(
+    (0): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (1): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (2): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (3): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (4): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (5): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (6): BlockEncoder(
+      (pos): PositionEncoder()
+      (first_conv): DepthwiseSeparableConv(
+        (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+        (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+      )
+      (convs): ModuleList(
+        (0): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+        (1): DepthwiseSeparableConv(
+          (depthwise_conv): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(2,), groups=128)
+          (pointwise_conv): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+        )
+      )
+      (conv_norm): LayerNorm(torch.Size([128, 300]), eps=1e-05, elementwise_affine=True)
+      (layer_norm): LayerNorm(torch.Size([300, 128]), eps=1e-05, elementwise_affine=True)
+      (attention): SelfAttention(
+        (w_qs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_ks): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+        (w_vs): ParameterList(
+            (0): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (1): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (2): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (3): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (4): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (5): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (6): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+            (7): Parameter containing: [torch.cuda.FloatTensor of size 128x16 (GPU 0)]
+
+        )
+      )
+      (fc): Linear(in_features=128, out_features=128, bias=True)
+    )
+  )
+  (start): Output(
+    (fc): Linear(in_features=76800, out_features=300, bias=True)
+  )
+  (end): Output(
+    (fc): Linear(in_features=76800, out_features=300, bias=True)
+  )
+)

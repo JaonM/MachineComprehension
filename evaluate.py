@@ -26,8 +26,8 @@ def idx2tokens(eval_file, ids, start_idxs, end_idxs):
             answer = ""
         else:
             start = spans[start_idx][0]
-            print(end_idx)
-            print(spans[end_idx])
+            # print(end_idx)
+            # print(spans[end_idx])
             end = spans[end_idx][1]
             answer = context[start:end]
         predictions[quid] = answer
