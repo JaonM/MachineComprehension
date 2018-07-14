@@ -49,7 +49,8 @@ def train(model, optimizer, data):
     :param data:
     :return: mini-batch loss
     """
-    optimizer.zero_grad()
+    # optimizer.zero_grad()
+    model.zero_grad()
     context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes, ids, y1s, y2s = data
     context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes = context_word_idxes.to(
         device), context_char_idxes.to(device), question_word_idxes.to(device), question_char_idxes.to(device)
@@ -81,7 +82,8 @@ def test(model, data, eval_file, answer_dict):
         loss = (start_loss + end_loss) / 2
         # loss.cuda()
         start_idxes, end_idxes = QANet.generate_answer_idxes(start, end)
-        answer_dict.update(idx2tokens(eval_file, ids, start_idxes, end_idxes))
+        answer = idx2tokens(eval_file,ids,start_idxes,end_idxes)
+        answer_dict.update(answer)
         return loss
 
 
@@ -104,6 +106,7 @@ def train_qanet():
 
     print('Start Building Model')
     model = QANet(word_mat, char_mat).to(device)
+    print(model)
 
     params = list(filter(lambda param: param.requires_grad, model.parameters()))
     optimizer = optim.Adam(params=params, lr=_config['learning_rate'], weight_decay=3e-7)
@@ -115,15 +118,17 @@ def train_qanet():
     epoch_index = 0
     for epoch in range(_config['num_epoch']):
         dev_losses = []
-        for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data)
-            print('{} step,training loss is {} ...'.format(step, loss))
+        # for step, data in enumerate(train_loader):
+        #     loss = train(model, optimizer, data)
+        #     print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file
         for step, data in enumerate(dev_loader):
             loss = test(model, data, dev_eval_file, answer_dict)
-            dev_losses.append(loss)
-            print('predicting {} step dev data...'.format(step))
+            dev_losses.append(loss.item())
+            print(answer_dict)
+            print(len(answer_dict))
+
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
         dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
