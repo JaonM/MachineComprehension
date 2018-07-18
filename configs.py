@@ -59,6 +59,8 @@ config = {
         'char_dropout_rate': 0.05,
         'dropout_rate': 0.1,
         'connector_dim': 128,
+
+        'grad_clip': 5.0,
     },
 
     'BIDAF': {
@@ -85,9 +87,36 @@ config = {
 
         'char_dropout_rate': 0.05,
         'dropout_rate': 0.1,
+
+        'grad_clip': 5.0,
     },
 
     'ensemble': {
+        'word_pretrained': True,
+        'char_pretrained': False,
+        'word_embedding': 'glove',  # glove or fasttext
+        'glove_emb_size': 300,
+        'fasttext_emb_size': 300,
+        'char_embedding': 'glove',
+        'glove_char_emb_size': 200,
+        'char_emb_size': 200,
+        'word_emb_size': 300,
 
+        'paragraph_limit': 300,
+        'question_limit': 40,
+        'answer_limit': 30,
+        'char_limit': 15,
+        'word_limit': -1,  # minimum required word
+
+        'num_epoch': 30,
+        'batch_size': 14,
+        'learning_rate': 0.001,
+        'early_stopping': 5,
+
+        'char_dropout_rate': 0.05,
+        'dropout_rate': 0.1,
+        'connector_dim': 128,
+
+        'grad_clip': 5.0,
     }
 }

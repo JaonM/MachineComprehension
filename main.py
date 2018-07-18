@@ -41,7 +41,7 @@ class SquadDataset(Dataset):
                self.question_char_idxes[idx], self.ids[idx], self.y1s[idx], self.y2s[idx]
 
 
-def train(model, optimizer, data):
+def train(model, optimizer, data, _config):
     """
     train process for each batch
     :param model:
@@ -64,6 +64,7 @@ def train(model, optimizer, data):
     loss.backward()
 
     optimizer.step()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), _config['grad_clip'])
     # print('loss here', loss)
 
     return loss
@@ -82,8 +83,8 @@ def test(model, data, eval_file, answer_dict):
         loss = (start_loss + end_loss) / 2
         # loss.cuda()
         start_idxes, end_idxes = QANet.generate_answer_idxes(start, end)
-        answer = idx2tokens(eval_file,ids,start_idxes,end_idxes)
-        answer_dict.update(answer)
+        answers = idx2tokens(eval_file, ids, start_idxes, end_idxes)
+        answer_dict.update(answers)
         return loss
 
 
@@ -119,7 +120,7 @@ def train_qanet():
     for epoch in range(_config['num_epoch']):
         dev_losses = []
         # for step, data in enumerate(train_loader):
-        #     loss = train(model, optimizer, data)
+        #     loss = train(model, optimizer, data,_config)
         #     print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file
@@ -186,7 +187,7 @@ def train_bidaf():
     for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data)
+            loss = train(model, optimizer, data,_config)
             print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file
@@ -221,7 +222,7 @@ def train_bidaf():
 
 
 def train_ensemble():
-    _config = config['BIDAF']
+    _config = config['ensemble']
     with codecs.open(configs.word_emb_file, 'r', 'utf-8') as f:
         word_mat = np.array(json.load(f), dtype='float32')
     with codecs.open(configs.char_emb_file, 'r', 'utf-8') as f:
@@ -251,7 +252,7 @@ def train_ensemble():
     for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data)
+            loss = train(model, optimizer, data,_config)
             print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file

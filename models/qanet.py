@@ -55,7 +55,8 @@ class PositionEncoder(nn.Module):
 
         position_enc[:, 0::2] = np.sin(position_enc[:, 0::2])  # dim 2i
         position_enc[:, 1::2] = np.cos(position_enc[:, 1::2])  # dim 2i+1
-        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
+        # self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
+        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
 
     def forward(self, x):
         # pos = self.pos_encoding.transpose(0, 1)
@@ -64,6 +65,10 @@ class PositionEncoder(nn.Module):
 
 
 class DepthwiseSeparableConv(nn.Module):
+    """
+    Input: shape=(batch_size,input_channels,context_length)
+    Output: shape=(batch_size,output_channels,context_length)
+    """
 
     def __init__(self, input_channels, output_channels, kernel_size, bias=True):
         super(DepthwiseSeparableConv, self).__init__()
@@ -186,17 +191,19 @@ class BlockEncoder(nn.Module):
         # x = self.shape_convert_fc(x)
         # x = F.relu(x)
         # x = F.dropout(x, config['dropout_rate'])
-        # print('fc shape', x.size())
+        print('origin size', x.size())
         x = self.first_conv(x)
-        x = F.relu(x)
+        print('first conv size', x.size())
+        # x = F.relu(x)
+        res = x
         for i in range(self.conv_num):
-            res = x
             pl = i / self.conv_num * (1 - 0.9)  # dropout rate decay
             x = self.conv_norm(x)
             x = self.convs[i](x)
             x = F.relu(x)
             x = res + x
             x = F.dropout(x, pl, training=self.training)
+            res = x
 
         x = x.permute(0, 2, 1)
         res = x
