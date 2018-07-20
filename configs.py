@@ -53,7 +53,7 @@ config = {
 
         'num_epoch': 30,
         'batch_size': 14,
-        'learning_rate': 0.001,
+        'learning_rate': 0.00001,
         'early_stopping': 5,
 
         'char_dropout_rate': 0.05,
@@ -100,6 +100,7 @@ config = {
         'char_embedding': 'glove',
         'glove_char_emb_size': 200,
         'char_emb_size': 200,
+
         'word_emb_size': 300,
 
         'paragraph_limit': 300,

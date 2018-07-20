@@ -111,24 +111,29 @@ def train_qanet():
 
     params = list(filter(lambda param: param.requires_grad, model.parameters()))
     optimizer = optim.Adam(params=params, lr=_config['learning_rate'], weight_decay=3e-7)
-
+    # optimizer = optim.SGD(params=params, lr=_config['learning_rate'], momentum=0.9, weight_decay=3e-7)
     best_f1 = 0
     best_em = 0
     patience = 0  # early stop patience
-
     epoch_index = 0
     for epoch in range(_config['num_epoch']):
-        dev_losses = []
-        # for step, data in enumerate(train_loader):
-        #     loss = train(model, optimizer, data,_config)
-        #     print('{} step,training loss is {} ...'.format(step, loss))
+
         answer_dict = dict()
+
+        for step, data in enumerate(train_loader):
+            loss = train(model, optimizer, data, _config)
+            # dev_losses = []
+            # for _step, _data in enumerate(dev_loader):
+            #     print('test dev step', _step)
+            #     loss = test(model, _data, dev_eval_file, answer_dict)
+            #     dev_losses.append(loss.item())
+            print('{} step,training loss is {} ...'.format(step, loss))
+            # print('{} step dev loss is {}...'.format(step, np.mean(dev_losses)))
         # test the dev file
+        dev_losses = []
         for step, data in enumerate(dev_loader):
             loss = test(model, data, dev_eval_file, answer_dict)
             dev_losses.append(loss.item())
-            print(answer_dict)
-            print(len(answer_dict))
 
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
@@ -187,7 +192,7 @@ def train_bidaf():
     for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data,_config)
+            loss = train(model, optimizer, data, _config)
             print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file
@@ -252,7 +257,7 @@ def train_ensemble():
     for epoch in range(_config['num_epoch']):
         dev_losses = []
         for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data,_config)
+            loss = train(model, optimizer, data, _config)
             print('{} step,training loss is {} ...'.format(step, loss))
         answer_dict = dict()
         # test the dev file

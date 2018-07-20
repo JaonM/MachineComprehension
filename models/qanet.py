@@ -55,8 +55,8 @@ class PositionEncoder(nn.Module):
 
         position_enc[:, 0::2] = np.sin(position_enc[:, 0::2])  # dim 2i
         position_enc[:, 1::2] = np.cos(position_enc[:, 1::2])  # dim 2i+1
-        # self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
-        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
+        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
+        # self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
 
     def forward(self, x):
         # pos = self.pos_encoding.transpose(0, 1)
@@ -191,9 +191,9 @@ class BlockEncoder(nn.Module):
         # x = self.shape_convert_fc(x)
         # x = F.relu(x)
         # x = F.dropout(x, config['dropout_rate'])
-        print('origin size', x.size())
+        # print('origin size', x.size())
         x = self.first_conv(x)
-        print('first conv size', x.size())
+        # print('first conv size', x.size())
         # x = F.relu(x)
         res = x
         for i in range(self.conv_num):
