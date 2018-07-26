@@ -55,7 +55,7 @@ class PositionEncoder(nn.Module):
 
         position_enc[:, 0::2] = np.sin(position_enc[:, 0::2])  # dim 2i
         position_enc[:, 1::2] = np.cos(position_enc[:, 1::2])  # dim 2i+1
-        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
+        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
         # self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
 
     def forward(self, x):
@@ -234,31 +234,27 @@ class ContextQueryAttention(nn.Module):
         super(ContextQueryAttention, self).__init__()
         # w = [torch.empty(config['question_limit'], 3 * config['connector_dim']) for _ in
         #      range(config['paragraph_limit'])]
-        # lim = 1 / config['connector_dim']
+        lim = 1 / config['connector_dim']
         # for i in range(config['paragraph_limit']):
-        #     nn.init.uniform_(w[i], -math.sqrt(lim), math.sqrt(lim))
+        w = torch.empty(3 * config['connector_dim'])
+        nn.init.uniform_(w, -math.sqrt(lim), math.sqrt(lim))
         # self.W0 = nn.ParameterList(nn.Parameter(x) for x in w)
-        self.W0 = nn.Parameter(torch.randn(3 * config['connector_dim']).to(device))
-        # self.S = torch.from_numpy(
-        #     np.zeros(shape=(config['batch_size'], config['paragraph_limit'], config['question_limit']))).type(
-        #     torch.FloatTensor).to(device)
+        self.W0 = nn.Parameter(w)
 
     def forward(self, c, q):
-        S = torch.from_numpy(
-            np.zeros(shape=(c.size(0), config['paragraph_limit'], config['question_limit']))).type(
-            torch.FloatTensor).to(device)
-        for batch in range(S.size(0)):
-            for i in range(config['paragraph_limit']):
-                for j in range(config['question_limit']):
-                    q_c_mul = torch.mul(q[batch, j, :], c[batch, i, :])
-                    S[batch, i, j] = torch.dot(self.W0, torch.cat([q[batch, j, :], c[batch, i, :], q_c_mul]))
-        S_ = F.softmax(S, dim=1)
-        A = torch.bmm(S_, q)
-        S__ = F.softmax(S, dim=2)
-        B = torch.bmm(torch.bmm(S_, S__.transpose(1, 2)), c)
+        shape = (c.size(0), c.size(1), q.size(1), c.size(2))
+        ct = c.unsqueeze(2).expand(shape)
+        qt = q.unsqueeze(1).expand(shape)
+        cq = torch.mul(ct, qt)
+        S = torch.cat([ct, qt, cq], dim=3)
+        S = torch.matmul(S, self.W0)
+        S1 = F.softmax(S, dim=1)
+        A = torch.bmm(S1, q)
+        S2 = F.softmax(S, dim=2)
+        B = torch.bmm(torch.bmm(S1, S2.transpose(1, 2)), c)
 
         out = torch.cat([c, A, torch.mul(c, A), torch.mul(c, B)], dim=2)
-        del S, S_, S__
+        del S, S1, S2
         gc.collect()
         return out
 

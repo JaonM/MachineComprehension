@@ -77,11 +77,9 @@ def test(model, data, eval_file, answer_dict):
             device), context_char_idxes.to(device), question_word_idxes.to(device), question_char_idxes.to(device)
         y1s, y2s = y1s.to(device), y2s.to(device)
         start, end = model(context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes)
-        # criterion = nn.NLLLoss()
         start_loss = F.nll_loss(start, y1s, size_average=True)
         end_loss = F.nll_loss(end, y2s, size_average=True)
         loss = (start_loss + end_loss) / 2
-        # loss.cuda()
         start_idxes, end_idxes = QANet.generate_answer_idxes(start, end)
         answers = idx2tokens(eval_file, ids, start_idxes, end_idxes)
         answer_dict.update(answers)
@@ -127,7 +125,7 @@ def train_qanet():
             #     print('test dev step', _step)
             #     loss = test(model, _data, dev_eval_file, answer_dict)
             #     dev_losses.append(loss.item())
-            print('{} step,training loss is {} ...'.format(step, loss))
+            print('{} step,training loss is {} ...'.format(step, loss.item()))
             # print('{} step dev loss is {}...'.format(step, np.mean(dev_losses)))
         # test the dev file
         dev_losses = []
@@ -150,7 +148,7 @@ def train_qanet():
             best_em = max(em, best_em)
             best_f1 = max(f1, best_f1)
             patience = 0
-
+        print('{} epoch f1 is {},em is {}'.format(epoch_index, best_f1, best_em))
         # save answers
         f = codecs.open(configs.answer_file, 'w', 'utf-8')
         json.dump(answer_dict, f)
@@ -193,18 +191,18 @@ def train_bidaf():
         dev_losses = []
         for step, data in enumerate(train_loader):
             loss = train(model, optimizer, data, _config)
-            print('{} step,training loss is {} ...'.format(step, loss))
+            print('{} step,training loss is {} ...'.format(step, loss.item()))
         answer_dict = dict()
         # test the dev file
         for step, data in enumerate(dev_loader):
             loss = test(model, data, dev_eval_file, answer_dict)
-            dev_losses.append(loss)
+            dev_losses.append(loss.item())
             print('predicting {} step dev data...'.format(step))
         print('{} epoch dev loss is {}...'.format(epoch_index, np.mean(dev_losses)))
         dev_losses.clear()
         dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
         dev_file = json.load(dev_file)
-        metrics = evaluate(dev_file['data'], answer_dict)
+        metrics = evaluate(dev_file['data'],answer_dict)
         f1, em = metrics['f1'], metrics['exact_match']
 
         if f1 < best_f1 and em < best_em:
@@ -215,7 +213,7 @@ def train_bidaf():
             best_em = max(em, best_em)
             best_f1 = max(f1, best_f1)
             patience = 0
-
+        print('{} epoch f1 is {},em is {}'.format(epoch_index,best_f1,best_em))
         # save answers
         f = codecs.open(configs.answer_file, 'w', 'utf-8')
         json.dump(answer_dict, f)
@@ -280,7 +278,7 @@ def train_ensemble():
             best_em = max(em, best_em)
             best_f1 = max(f1, best_f1)
             patience = 0
-
+        print('{} epoch f1 is {},em is {}'.format(epoch_index, best_f1, best_em))
         # save answers
         f = codecs.open(configs.answer_file, 'w', 'utf-8')
         json.dump(answer_dict, f)

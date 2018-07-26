@@ -32,7 +32,7 @@ answer_file = os.path.join(home, 'data', 'answer.json')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 config = {
-    'model': 'QANet',
+    'model': 'BIDAF',
 
     'QANet': {
         'word_pretrained': True,
@@ -81,7 +81,7 @@ config = {
         'word_limit': -1,  # minimum required word
 
         'num_epoch': 30,
-        'batch_size': 8,
+        'batch_size': 16,
         'learning_rate': 0.001,
         'early_stopping': 5,
 

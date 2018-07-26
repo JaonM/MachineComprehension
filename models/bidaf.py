@@ -106,21 +106,20 @@ class AttentionFlowLayer(nn.Module):
         self.W0 = nn.Parameter(torch.randn(6 * (config['word_emb_size'] + config['char_emb_size'])))
 
     def forward(self, c, q):
-        S = torch.from_numpy(
-            np.zeros(shape=(c.size(0), config['paragraph_limit'], config['question_limit']))).type(
-            torch.FloatTensor).to(device)
-        for batch in range(S.size(0)):
-            for i in range(config['paragraph_limit']):
-                for j in range(config['question_limit']):
-                    q_c_mul = torch.mul(q[batch, j, :], c[batch, i, :])
-                    S[batch, i, j] = torch.dot(self.W0, torch.cat([q[batch, j, :], c[batch, i, :], q_c_mul]))
-        S_ = F.softmax(S, dim=1)
-        A = torch.bmm(S_, q)
-        S__ = F.softmax(S, dim=2)
-        B = torch.bmm(torch.bmm(S_, S__.transpose(1, 2)), c)
+        shape = (c.size(0), c.size(1), q.size(1), c.size(2))
+        ct = c.unsqueeze(2).expand(shape)
+        qt = q.unsqueeze(1).expand(shape)
+        cq = torch.mul(ct, qt)
+        S = torch.cat([ct, qt, cq], dim=3)
+        S = torch.matmul(S,self.W0)
+        S1 = F.softmax(S, dim=1)
+        A = torch.bmm(S1, q)
+        S2 = F.softmax(S, dim=2)
+        B = torch.bmm(torch.bmm(S1, S2.transpose(1, 2)), c)
 
         out = torch.cat([c, A, torch.mul(c, A), torch.mul(c, B)], dim=2)
-        del S, S_, S__
+        out = F.dropout(out,config['dropout_rate'],training=self.training)
+        del S, S1, S2
         gc.collect()
         return out
 
@@ -175,7 +174,7 @@ class Output(nn.Module):
         end = torch.matmul(end, self.w2)
         end = F.dropout(end, config['dropout_rate'], training=self.training)
         end = F.log_softmax(end, dim=1)
-        return start.squeeze(), end.squeeze()
+        return start.squeeze(2), end.squeeze(2)
 
 
 class BIDAF(nn.Module):
