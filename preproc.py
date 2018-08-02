@@ -48,7 +48,7 @@ def process_file(filename, data_type, word_counter, char_counter):
         source = json.load(f)
         for article in tqdm(source['data']):
             for paragraph in article['paragraphs']:
-                context = paragraph["context"].replace("''", '" ').replace("``", '" ')
+                context = paragraph["context"].replace("''", '"').replace("``", '"')
                 context_tokens = word_tokenize(context)
                 context_chars = [list(token) for token in context_tokens]
                 spans = convert_index(context, context_tokens)
@@ -144,10 +144,10 @@ def build_features(config, data_set, data_type, out_file, word2idx, char2idx):
     :return:
     """
     print('Creating {} features...'.format(data_type))
-    paragraph_limit = config['paragraph_limit']  # minimum paragraph word count
-    question_limit = config['question_limit']  # minimum question word count
-    answer_limit = config['answer_limit']  # minimum answer word count
-    char_limit = config['char_limit']  # minimum char count in each word
+    paragraph_limit = config['paragraph_limit']  # maximum paragraph word count
+    question_limit = config['question_limit']  # maximum question word count
+    # answer_limit = config['answer_limit']  # maximum answer word count
+    char_limit = config['char_limit']  # maximum char count in each word
 
     total = 0
     filter_total = 0
@@ -161,8 +161,8 @@ def build_features(config, data_set, data_type, out_file, word2idx, char2idx):
     ids = []  # index id
 
     def _filter(data):
-        return len(data['context_tokens']) > paragraph_limit or len(data['question_tokens']) > question_limit or \
-               (data['y2s'][0] - data['y1s'][0]) > answer_limit
+        return len(data['context_tokens']) > paragraph_limit or len(data['question_tokens']) > question_limit
+               # (data['y2s'][0] - data['y1s'][0]) > answer_limit
 
     def _get_word_idx(word):
         for each in (word, word.lower(), word.upper(), word.capitalize()):

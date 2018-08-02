@@ -34,6 +34,20 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 config = {
     'model': 'BIDAF',
 
+    'paragraph_limit': 300,
+    'question_limit': 40,
+    'answer_limit': 30,
+    'char_limit': 16,
+    'word_limit': -1,  # minimum required word
+    'word_pretrained': True,
+    'char_pretrained': False,
+    'word_embedding': 'glove',  # glove or fasttext
+    'glove_emb_size': 300,
+    'fasttext_emb_size': 300,
+    'char_embedding': 'glove',
+    'glove_char_emb_size': 200,
+    'char_emb_size': 200,
+
     'QANet': {
         'word_pretrained': True,
         'char_pretrained': False,
@@ -48,12 +62,12 @@ config = {
         'paragraph_limit': 300,
         'question_limit': 40,
         'answer_limit': 30,
-        'char_limit': 15,
+        'char_limit': 16,
         'word_limit': -1,  # minimum required word
 
         'num_epoch': 30,
         'batch_size': 14,
-        'learning_rate': 0.00001,
+        'learning_rate': 0.0001,
         'early_stopping': 5,
 
         'char_dropout_rate': 0.05,
@@ -82,11 +96,11 @@ config = {
 
         'num_epoch': 30,
         'batch_size': 16,
-        'learning_rate': 0.001,
+        'learning_rate': 0.0001,
         'early_stopping': 5,
 
         'char_dropout_rate': 0.05,
-        'dropout_rate': 0.1,
+        'dropout_rate': 0.2,
 
         'grad_clip': 5.0,
     },
@@ -106,7 +120,7 @@ config = {
         'paragraph_limit': 300,
         'question_limit': 40,
         'answer_limit': 30,
-        'char_limit': 15,
+        'char_limit': 16,
         'word_limit': -1,  # minimum required word
 
         'num_epoch': 30,

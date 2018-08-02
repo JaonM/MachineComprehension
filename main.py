@@ -49,8 +49,7 @@ def train(model, optimizer, data, _config):
     :param data:
     :return: mini-batch loss
     """
-    # optimizer.zero_grad()
-    model.zero_grad()
+    optimizer.zero_grad()
     context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes, ids, y1s, y2s = data
     context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes = context_word_idxes.to(
         device), context_char_idxes.to(device), question_word_idxes.to(device), question_char_idxes.to(device)
@@ -66,7 +65,6 @@ def train(model, optimizer, data, _config):
     optimizer.step()
     torch.nn.utils.clip_grad_norm_(model.parameters(), _config['grad_clip'])
     # print('loss here', loss)
-
     return loss
 
 
@@ -99,8 +97,7 @@ def train_qanet():
 
     train_dataset = SquadDataset(configs.train_record_file)
     dev_dataset = SquadDataset(configs.dev_record_file)
-    train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
-                              collate_fn=collate_fn)
+
     dev_loader = DataLoader(dataset=dev_dataset, batch_size=_config['batch_size'], shuffle=True, collate_fn=collate_fn)
 
     print('Start Building Model')
@@ -117,7 +114,9 @@ def train_qanet():
     for epoch in range(_config['num_epoch']):
 
         answer_dict = dict()
-
+        model.train()
+        train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
+                                  collate_fn=collate_fn)
         for step, data in enumerate(train_loader):
             loss = train(model, optimizer, data, _config)
             # dev_losses = []
@@ -172,8 +171,6 @@ def train_bidaf():
 
     train_dataset = SquadDataset(configs.train_record_file)
     dev_dataset = SquadDataset(configs.dev_record_file)
-    train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
-                              collate_fn=collate_fn)
     dev_loader = DataLoader(dataset=dev_dataset, batch_size=_config['batch_size'], shuffle=True, collate_fn=collate_fn)
 
     print('Start Building Model')
@@ -189,6 +186,9 @@ def train_bidaf():
     epoch_index = 0
     for epoch in range(_config['num_epoch']):
         dev_losses = []
+        train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
+                                  collate_fn=collate_fn)
+        model.train()
         for step, data in enumerate(train_loader):
             loss = train(model, optimizer, data, _config)
             print('{} step,training loss is {} ...'.format(step, loss.item()))

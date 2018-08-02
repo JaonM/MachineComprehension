@@ -43,18 +43,24 @@ class Embedding(nn.Module):
     Output shape: shape=(batch_size,length,word_emb_size+char_emb_size)
     """
 
-    def __init__(self):
+    def __init__(self, length):
+        """
+        init method
+        :param length: question length or context length
+        """
         super(Embedding, self).__init__()
         self.highway = Highway(2)
-        # self.conv = nn.Conv2d(length, config['char_emb_size'], 5)
-        # self.max_pool = nn.MaxPool2d(5)
+        self.conv = nn.Conv2d(length, length, (5, 1))
+        self.max_pool = nn.MaxPool2d((config['char_limit'] - 5 + 1, 1))
         # self.char_emb = torch.Tensor(np.zeros(shape=(config['batch_size'],length,config['char_emb_size'])))
 
     def forward(self, word_emb, char_emb):
-        # char_emb = self.conv(char_emb)
-        # char_emb = self.max_pool(char_emb)
-        # print(char_emb.size())
-        char_emb, _ = torch.max(char_emb, dim=2)
+        char_emb = self.conv(char_emb)
+        char_emb = self.max_pool(char_emb)
+        char_emb = F.dropout(char_emb, 0.2, training=self.training)
+        char_emb = char_emb.squeeze(2)
+
+        # char_emb, _ = torch.max(char_emb, dim=2)
         x = torch.cat([word_emb, char_emb], dim=2)
         x = self.highway(x)
         return x
@@ -76,20 +82,19 @@ class ContextualEmbedding(nn.Module):
 
     def __init__(self, input_dim):
         super(ContextualEmbedding, self).__init__()
-        self.lstm = nn.LSTM(input_dim, input_dim)
+        self.lstm = nn.LSTM(input_dim, input_dim,batch_first=True)
 
     def forward(self, x):
-        x = x.transpose(0, 1)
-        x = F.dropout(x, config['dropout_rate'], training=self.training)
 
         out, hidden = self.lstm(x)
+        out = F.dropout(out, config['dropout_rate'], training=self.training)
 
         x_backward = flip(x, 0)
-        x_backward = F.dropout(x_backward, config['dropout_rate'], training=self.training)
 
         out_back, hidden = self.lstm(x_backward)
+        out_back = F.dropout(out_back, config['dropout_rate'], training=self.training)
+
         x = torch.cat([out, out_back], dim=2)
-        x = x.transpose(0, 1)
         return x
 
 
@@ -111,14 +116,14 @@ class AttentionFlowLayer(nn.Module):
         qt = q.unsqueeze(1).expand(shape)
         cq = torch.mul(ct, qt)
         S = torch.cat([ct, qt, cq], dim=3)
-        S = torch.matmul(S,self.W0)
-        S1 = F.softmax(S, dim=1)
+        S = torch.matmul(S, self.W0)
+        S1 = F.softmax(S, dim=2)
         A = torch.bmm(S1, q)
-        S2 = F.softmax(S, dim=2)
+        S2 = F.softmax(S, dim=1)
         B = torch.bmm(torch.bmm(S1, S2.transpose(1, 2)), c)
 
         out = torch.cat([c, A, torch.mul(c, A), torch.mul(c, B)], dim=2)
-        out = F.dropout(out,config['dropout_rate'],training=self.training)
+        out = F.dropout(out, config['dropout_rate'], training=self.training)
         del S, S1, S2
         gc.collect()
         return out
@@ -136,14 +141,15 @@ class ModelingLayer(nn.Module):
         super(ModelingLayer, self).__init__()
         self.lstm = nn.LSTM(8 * (config['word_emb_size'] + config['char_emb_size']),
                             (config['word_emb_size'] + config['char_emb_size']),
+                            batch_first=True,
                             bidirectional=True)
 
     def forward(self, x):
-        x = x.transpose(0, 1)
         x = F.dropout(x, config['dropout_rate'], training=self.training)
         out, hidden = self.lstm(x)
+        out = F.dropout(out,config['dropout_rate'],True)
 
-        return out.transpose(0, 1)
+        return out
 
 
 class Output(nn.Module):
@@ -157,22 +163,23 @@ class Output(nn.Module):
     def __init__(self):
         super(Output, self).__init__()
         self.lstm = nn.LSTM(2 * (config['word_emb_size'] + config['char_emb_size']),
-                            2 * (config['word_emb_size'] + config['char_emb_size']))
+                            2 * (config['word_emb_size'] + config['char_emb_size']),bidirectional=True)
         self.w1 = nn.Parameter(torch.randn(10 * (config['word_emb_size'] + config['char_emb_size']), 1))
-        self.w2 = nn.Parameter(torch.randn(10 * (config['word_emb_size'] + config['char_emb_size']), 1))
+        self.w2 = nn.Parameter(torch.randn(12 * (config['word_emb_size'] + config['char_emb_size']), 1))
 
     def forward(self, G, M):
         start = torch.cat([G, M], dim=2)
         start = torch.matmul(start, self.w1)
-        start = F.dropout(start, config['dropout_rate'], training=self.training)
+        # start = F.dropout(start, config['dropout_rate'], training=self.training)
         start = F.log_softmax(start, dim=1)
 
         M = M.transpose(0, 1)
         M2, hidden = self.lstm(M)
+        M2 = F.dropout(M2, config['dropout_rate'], training=self.training)
         M2 = M2.transpose(0, 1)
         end = torch.cat([G, M2], dim=2)
         end = torch.matmul(end, self.w2)
-        end = F.dropout(end, config['dropout_rate'], training=self.training)
+        # end = F.dropout(end, config['dropout_rate'], training=self.training)
         end = F.log_softmax(end, dim=1)
         return start.squeeze(2), end.squeeze(2)
 
@@ -189,11 +196,12 @@ class BIDAF(nn.Module):
         else:
             self.char_emb = nn.Embedding.from_pretrained(torch.Tensor(char_mat), freeze=False)
         if config['word_pretrained']:
+
             self.word_emb = nn.Embedding.from_pretrained(torch.Tensor(word_mat), freeze=False)
         else:
             self.word_emb = nn.Embedding.from_pretrained(torch.Tensor(word_mat), freeze=True)
-        self.context_emb = Embedding()
-        self.question_emb = Embedding()
+        self.context_emb = Embedding(config['paragraph_limit'])
+        self.question_emb = Embedding(config['question_limit'])
         self.context_contextual_emb = ContextualEmbedding(config['word_emb_size'] + config['char_emb_size'])
         self.question_contextual_emb = ContextualEmbedding(config['word_emb_size'] + config['char_emb_size'])
         self.attention_layer = AttentionFlowLayer()
@@ -202,7 +210,7 @@ class BIDAF(nn.Module):
 
     def forward(self, context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes):
         context_emb = self.context_emb(self.word_emb(context_word_idxes), self.char_emb(context_char_idxes))
-        question_emb = self.context_emb(self.word_emb(question_word_idxes), self.char_emb(question_char_idxes))
+        question_emb = self.question_emb(self.word_emb(question_word_idxes), self.char_emb(question_char_idxes))
 
         context_emb = self.context_contextual_emb(context_emb)
         question_emb = self.question_contextual_emb(question_emb)
@@ -217,14 +225,14 @@ if __name__ == '__main__':
     a = torch.rand(8, 40, 300)
     b = torch.rand(8, 40, 16, 200)
 
-    x = Embedding()(a, b)
+    x = Embedding(40)(a, b)
     x = ContextualEmbedding(500)(x)
     print('question', x.size())
 
     c = torch.rand(8, 300, 300)
     d = torch.rand(8, 300, 16, 200)
 
-    y = Embedding()(c, d)
+    y = Embedding(300)(c, d)
     y = ContextualEmbedding(500)(y)
     print('context', y.size())
 
