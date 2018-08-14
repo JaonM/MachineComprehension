@@ -55,7 +55,7 @@ class PositionEncoder(nn.Module):
 
         position_enc[:, 0::2] = np.sin(position_enc[:, 0::2])  # dim 2i
         position_enc[:, 1::2] = np.cos(position_enc[:, 1::2])  # dim 2i+1
-        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
+        self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor).to(device)
         # self.pos_encoding = torch.from_numpy(position_enc).type(torch.FloatTensor)
 
     def forward(self, x):
@@ -248,9 +248,9 @@ class ContextQueryAttention(nn.Module):
         cq = torch.mul(ct, qt)
         S = torch.cat([ct, qt, cq], dim=3)
         S = torch.matmul(S, self.W0)
-        S1 = F.softmax(S, dim=1)
+        S1 = F.softmax(S, dim=2)
         A = torch.bmm(S1, q)
-        S2 = F.softmax(S, dim=2)
+        S2 = F.softmax(S, dim=1)
         B = torch.bmm(torch.bmm(S1, S2.transpose(1, 2)), c)
 
         out = torch.cat([c, A, torch.mul(c, A), torch.mul(c, B)], dim=2)
@@ -295,7 +295,7 @@ class QANet(nn.Module):
         if config['word_pretrained']:
             self.word_emb = nn.Embedding.from_pretrained(torch.Tensor(word_mat))
         else:
-            self.word_emb = nn.Embedding.from_pretrained(torch.Tensor(word_mat))
+            self.word_emb = nn.Embedding.from_pretrained(torch.Tensor(word_mat),freeze=True)
         self.context_emb = Embedding()
         self.question_emb = Embedding()
         self.context_emb_encoder = BlockEncoder(config['word_emb_size'] + config['char_emb_size'], 4,
@@ -351,8 +351,8 @@ class QANet(nn.Module):
         start_anwsers = list()
         end_answers = list()
         batch_size = start.size(0)
-        start = start.cpu().numpy()
-        end = end.cpu().numpy()
+        start = start.detach().cpu().numpy()
+        end = end.detach().cpu().numpy()
         for batch in range(batch_size):
             max_p = start[batch][0] * end[batch][0]
             start_max_idx = 0
@@ -360,9 +360,10 @@ class QANet(nn.Module):
             for i in range(1, len(end[batch])):
                 start_max_p = start[batch][:i].max()
                 _start_max_idx = start[batch][:i].argmax()
-                if max_p <= start_max_p * end[batch][i]:
+                if max_p >= start_max_p * end[batch][i]:
                     start_max_idx = _start_max_idx
                     end_max_idx = i
+                    max_p = start_max_p * end[batch][i]
             start_anwsers.append(start_max_idx)
             end_answers.append(end_max_idx)
         return start_anwsers, end_answers

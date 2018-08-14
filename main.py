@@ -41,13 +41,17 @@ class SquadDataset(Dataset):
                self.question_char_idxes[idx], self.ids[idx], self.y1s[idx], self.y2s[idx]
 
 
-def train(model, optimizer, data, _config):
+def train(model, optimizer, data, _config, eval_file, answer_dict):
     """
     train process for each batch
+
     :param model:
     :param optimizer:
     :param data:
-    :return: mini-batch loss
+    :param _config:
+    :param eval_file:
+    :param answer_dict:
+    :return:
     """
     optimizer.zero_grad()
     context_word_idxes, context_char_idxes, question_word_idxes, question_char_idxes, ids, y1s, y2s = data
@@ -64,6 +68,10 @@ def train(model, optimizer, data, _config):
 
     optimizer.step()
     torch.nn.utils.clip_grad_norm_(model.parameters(), _config['grad_clip'])
+
+    start_idxes, end_idxes = QANet.generate_answer_idxes(start, end)
+    answers = idx2tokens(eval_file, ids, start_idxes, end_idxes)
+    answer_dict.update(answers)
     # print('loss here', loss)
     return loss
 
@@ -90,8 +98,8 @@ def train_qanet():
         word_mat = np.array(json.load(f), dtype='float32')
     with codecs.open(configs.char_emb_file, 'r', 'utf-8') as f:
         char_mat = np.array(json.load(f), dtype='float32')
-    # with codecs.open(configs.train_eval_file, 'r', 'utf-8') as f:
-    #     train_eval_file = json.load(f)
+    with codecs.open(configs.train_eval_file, 'r', 'utf-8') as f:
+        train_eval_file = json.load(f)
     with codecs.open(configs.dev_eval_file, 'r', 'utf-8') as f:
         dev_eval_file = json.load(f)
 
@@ -118,14 +126,15 @@ def train_qanet():
         train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
                                   collate_fn=collate_fn)
         for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data, _config)
-            # dev_losses = []
-            # for _step, _data in enumerate(dev_loader):
-            #     print('test dev step', _step)
-            #     loss = test(model, _data, dev_eval_file, answer_dict)
-            #     dev_losses.append(loss.item())
+            loss = train(model, optimizer, data, _config, train_eval_file, answer_dict)
             print('{} step,training loss is {} ...'.format(step, loss.item()))
-            # print('{} step dev loss is {}...'.format(step, np.mean(dev_losses)))
+        train_file = codecs.open(configs.train_file, 'r', 'utf-8')
+        train_file = json.load(train_file)
+        metrics = evaluate(train_file['data'], answer_dict)
+        f1, em = metrics['f1'], metrics['exact_match']
+        print('epoch {} f1/em is {}/{}'.format(epoch_index, f1, em))
+
+        answer_dict.clear()
         # test the dev file
         dev_losses = []
         for step, data in enumerate(dev_loader):
@@ -164,8 +173,8 @@ def train_bidaf():
         word_mat = np.array(json.load(f), dtype='float32')
     with codecs.open(configs.char_emb_file, 'r', 'utf-8') as f:
         char_mat = np.array(json.load(f), dtype='float32')
-    # with codecs.open(configs.train_eval_file, 'r', 'utf-8') as f:
-    #     train_eval_file = json.load(f)
+    with codecs.open(configs.train_eval_file, 'r', 'utf-8') as f:
+        train_eval_file = json.load(f)
     with codecs.open(configs.dev_eval_file, 'r', 'utf-8') as f:
         dev_eval_file = json.load(f)
 
@@ -189,10 +198,19 @@ def train_bidaf():
         train_loader = DataLoader(dataset=train_dataset, batch_size=_config['batch_size'], shuffle=True,
                                   collate_fn=collate_fn)
         model.train()
-        for step, data in enumerate(train_loader):
-            loss = train(model, optimizer, data, _config)
-            print('{} step,training loss is {} ...'.format(step, loss.item()))
         answer_dict = dict()
+
+        for step, data in enumerate(train_loader):
+            loss = train(model, optimizer, data, _config, train_eval_file, answer_dict)
+            print('{} step,training loss is {} ...'.format(step, loss.item()))
+
+        train_file = codecs.open(configs.train_file, 'r', 'utf-8')
+        train_file = json.load(train_file)
+        metrics = evaluate(train_file['data'], answer_dict)
+        f1, em = metrics['f1'], metrics['exact_match']
+        print('epoch {} f1/em is {}/{}'.format(epoch_index, f1, em))
+
+        answer_dict.clear()
         # test the dev file
         for step, data in enumerate(dev_loader):
             loss = test(model, data, dev_eval_file, answer_dict)
@@ -202,7 +220,7 @@ def train_bidaf():
         dev_losses.clear()
         dev_file = codecs.open(configs.dev_file, 'r', 'utf-8')
         dev_file = json.load(dev_file)
-        metrics = evaluate(dev_file['data'],answer_dict)
+        metrics = evaluate(dev_file['data'], answer_dict)
         f1, em = metrics['f1'], metrics['exact_match']
 
         if f1 < best_f1 and em < best_em:
@@ -213,7 +231,7 @@ def train_bidaf():
             best_em = max(em, best_em)
             best_f1 = max(f1, best_f1)
             patience = 0
-        print('{} epoch f1 is {},em is {}'.format(epoch_index,best_f1,best_em))
+        print('{} epoch f1 is {},em is {}'.format(epoch_index, best_f1, best_em))
         # save answers
         f = codecs.open(configs.answer_file, 'w', 'utf-8')
         json.dump(answer_dict, f)
